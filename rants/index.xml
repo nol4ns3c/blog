@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rants on Terminal</title>
+    <link>https://c0rt3x.xyz/rants/</link>
+    <description>Recent content in Rants on Terminal</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 30 Mar 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://c0rt3x.xyz/rants/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Infinite Loop</title>
+      <link>https://c0rt3x.xyz/rants/infinite-loop/</link>
+      <pubDate>Sun, 30 Mar 2025 00:00:00 +0000</pubDate>
+      <guid>https://c0rt3x.xyz/rants/infinite-loop/</guid>
+      <description>&lt;h1 id=&#34;its-one-of-those-nights&#34;&gt;It’s one of those nights.&lt;/h1&gt;&#xA;&lt;p&gt;It’s past midnight, and I’m sitting on a train, watching the city slip by in flickering lights and blurred reflections.&lt;/p&gt;&#xA;&lt;p&gt;I let my mind wander.&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;h3 id=&#34;what-does-a-train-have-to-do-with-life&#34;&gt;What does a train have to do with life?&lt;/h3&gt;&#xA;&lt;p&gt;I imagine a train—not just any train, but one that moves in a perfect loop. A train with no first station, no final destination. It just keeps circling the city, endlessly. You step on somewhere—anywhere—but the exact point doesn’t really matter.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

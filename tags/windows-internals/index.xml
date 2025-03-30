@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Windows Internals on Terminal</title>
+    <link>https://c0rt3x.xyz/tags/windows-internals/</link>
+    <description>Recent content in Windows Internals on Terminal</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 31 Jul 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://c0rt3x.xyz/tags/windows-internals/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Syscalls — EDR evasion p1 (optional)</title>
+      <link>https://c0rt3x.xyz/posts/syscalls-edr-evasion/</link>
+      <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+      <guid>https://c0rt3x.xyz/posts/syscalls-edr-evasion/</guid>
+      <description>&lt;h3 id=&#34;what-is-user-mode-api-hooking-in-edr&#34;&gt;What is User mode API-Hooking in EDR?&lt;/h3&gt;&#xA;&lt;p&gt;Imagine you’ve just got some great deals at a newly opened supermarket and are heading home with your transparent shopping bag. As you stroll by the neighborhood grocer, he peeks into your bag to see what you’ve bought. If he spots something he already stocks (something sus), he stops you and won’t let you pass.&lt;/p&gt;&#xA;&lt;p&gt;User-mode API hooking allows EDRs to dynamically inspect code executed within the context of Windows APIs or Native APIs for potentially malicious content or behavior. There are various types of hooking, with most vendors using the inline hooking method. This method replaces a specific &lt;code&gt;mov&lt;/code&gt; instruction—more specifically, the &lt;code&gt;mov&lt;/code&gt; opcode and the &lt;code&gt;eax&lt;/code&gt; SSN operands—with a 5-byte &lt;code&gt;jmp&lt;/code&gt; instruction. The &lt;code&gt;mov&lt;/code&gt; instruction typically moves the syscall number or system service number (SSN) to the &lt;code&gt;eax&lt;/code&gt; register. The unconditional &lt;code&gt;jmp&lt;/code&gt; instruction redirects to the EDR&amp;rsquo;s hooking DLL, allowing the EDR to examine the code executed within the context of the Native API for potentially malicious content.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
