@@ -17,7 +17,7 @@ pagination.pagerSize = 5
   showLastUpdated = false
 
 [languages]
-  [languages.en]
+  [languages.en]  
     languageName = "English"
     title = "Terminal"
 
@@ -37,7 +37,7 @@ pagination.pagerSize = 5
 
       [languages.en.params.logo]
         logoText = "Terminal"
-        logoHomeLink = "/"
+        logoHomeLink = "/whoami"
 
     [languages.en.menu]
       [[languages.en.menu.main]]
